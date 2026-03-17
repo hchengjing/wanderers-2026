@@ -1,6 +1,6 @@
-#include <IRremote.h>  //send and receive infrared signals
+#include <Arduino.h>
+#include <IRremote.h>
 
-//def pin num
 #define IR_RECEIVE_PIN     32
 #define IR_SEND_PIN        33
 
@@ -18,22 +18,22 @@ struct uint16_hex_digits
 
 struct ir_signal
 {
-    //values ranging from 0 to 65535, hexadecimal notation
     uint16_hex_digits address;
     uint16_hex_digits command;
 };
 
 class IR{
     public:
-        IR(){}  //create an instance of the IRrecv class, receiving IR from remote control
+        IR(){}
 
         void enable(void)
         {
             IrReceiver.begin(IR_RECEIVE_PIN);
-            IrSender.begin(IR_SEND_PIN);;  //enable sensor
+            IrSender.begin(IR_SEND_PIN);;  // Enable the sensor.
             IrSender.enableIROut(IR_out_freq); 
             IrReceiver.start();
         }
+
 
         void send(ir_signal signal, uint8_t sRepeats)
         {
@@ -44,12 +44,14 @@ class IR{
             IrReceiver.restartAfterSend();
         }
 
-        int available(void)  //check for data available in serial port
+
+        int available(void)
         {   
             return IrReceiver.decode();
         }
 
-        ir_signal read(void)  //reads IR signals
+
+        ir_signal read(void)
         {
             uint16_hex_digits address = decode_uint16(IrReceiver.decodedIRData.address);
             uint16_hex_digits command = decode_uint16(IrReceiver.decodedIRData.command);
@@ -62,8 +64,7 @@ class IR{
             return received_signal_decoded;
         }
 
-        uint16_hex_digits decode_uint16(uint16_t number)
-        {
+        uint16_hex_digits decode_uint16(uint16_t number) {
             uint16_hex_digits decoded_digits;
             decoded_digits.digit0 = number & 0x000F;
             decoded_digits.digit1 = (number >> 4) & 0x000F;
@@ -72,10 +73,9 @@ class IR{
             return decoded_digits;
         }
 
-        uint16_t encode_uint16(uint16_hex_digits digits)
-        {
+        uint16_t encode_uint16(uint16_hex_digits digits){
             return digits.digit0 + (digits.digit1 << 4) + (digits.digit2 << 8) + (digits.digit3 << 12);
         }
 };
 
-IR Player_IR;
+IR TreasureLevel2_IR;
